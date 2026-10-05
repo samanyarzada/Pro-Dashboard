@@ -145,8 +145,8 @@
 }
 
 .login-button:hover {
-  background: white;
-  color: black;
+  background: var(--primary-hover);
+  color: #ffffff;
 
   transform: translateY(-1px);
 }

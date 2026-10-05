@@ -7,21 +7,16 @@ import {
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({
-  children,
-}) {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
-      const storedUser =
-        localStorage.getItem("user");
+      const storedUser = localStorage.getItem("user");
 
       if (storedUser) {
-        const parsedUser =
-          JSON.parse(storedUser);
-
+        const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       }
     } catch (error) {
@@ -37,10 +32,7 @@ export function AuthProvider({
     }
   }, []);
 
-  const login = async (
-    email,
-    password
-  ) => {
+  const login = async (email, password) => {
     if (
       email === "admin@example.com" &&
       password === "123456"
@@ -66,8 +58,7 @@ export function AuthProvider({
 
     return {
       success: false,
-      message:
-        "Invalid email or password.",
+      message: "Invalid email or password.",
     };
   };
 

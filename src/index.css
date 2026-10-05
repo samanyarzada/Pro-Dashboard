@@ -88,6 +88,8 @@ a {
 
   /* Shadow */
   --card-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
 }
 
 html[data-theme="dark"] {
@@ -122,6 +124,8 @@ html[data-theme="dark"] {
 
   --button-secondary-bg: #334155;
   --button-secondary-text: #e2e8f0;
+   --primary-color: #60a5fa;
+  --primary-hover: #3b82f6;
 
   /* Shadow */
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);

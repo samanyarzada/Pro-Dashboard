@@ -1,8 +1,6 @@
-import {
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
 
 import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -10,7 +8,6 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/auth/Login";
 
 import Dashboard from "../pages/dashboard/Dashboard";
-
 import Projects from "../pages/projects/Projects";
 import ProjectDetails from "../pages/projects/ProjectDetails";
 
@@ -23,70 +20,85 @@ import NotFound from "../pages/NotFound";
 
 import ProtectedRoute from "./ProtectedRoute";
 
+function RootRedirect() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/app/dashboard" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
+}
+
+function LoginRedirect() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/app/dashboard" replace />;
+  }
+
+  return <Login />;
+}
+
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* =========================
+          Root
+      ========================= */}
+
+      <Route path="/" element={<RootRedirect />} />
+
+      {/* =========================
+          Authentication
+      ========================= */}
+
       <Route element={<AuthLayout />}>
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<LoginRedirect />} />
       </Route>
 
-      {/* Protected Application */}
+      {/* =========================
+          Protected Application
+      ========================= */}
+
       <Route element={<ProtectedRoute />}>
-        <Route
-          path="/app"
-          element={<DashboardLayout />}
-        >
-          <Route
-            index
-            element={
-              <Navigate
-                to="dashboard"
-                replace
-              />
-            }
-          />
+        <Route path="/app" element={<DashboardLayout />}>
+          {/* /app → /app/dashboard */}
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
 
-          <Route
-            path="dashboard"
-            element={<Dashboard />}
-          />
+          {/* Dashboard */}
+          <Route path="dashboard" element={<Dashboard />} />
 
-          <Route
-            path="projects"
-            element={<Projects />}
-          />
+          {/* Projects */}
+          <Route path="projects" element={<Projects />} />
 
-          <Route
-            path="projects/:id"
-            element={<ProjectDetails />}
-          />
+          {/* Project Details */}
+          <Route path="projects/:id" element={<ProjectDetails />} />
 
-          <Route
-            path="analytics"
-            element={<Analytics />}
-          />
+          {/* Analytics */}
+          <Route path="analytics" element={<Analytics />} />
 
-          <Route
-            path="profile"
-            element={<Profile />}
-          />
+          {/* Profile */}
+          <Route path="profile" element={<Profile />} />
 
-          <Route
-            path="settings"
-            element={<Settings />}
-          />
+          {/* Settings */}
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
 
-      {/* 404 */}
-      <Route
-        path="*"
-        element={<NotFound />}
-      />
+      {/* =========================
+          404
+      ========================= */}
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
