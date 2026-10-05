@@ -1,16 +1,165 @@
-# React + Vite
+# Pro Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive, and professional dashboard built with React and Vite.
 
-Currently, two official plugins are available:
+Pro Dashboard is a frontend dashboard application designed with a clean UI, reusable components, responsive layouts, authentication flow, project management, analytics, profile management, settings, and light/dark theme support.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Live Demo
 
-## React Compiler
+The project is deployed with Vercel:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+https://pro-dashboard.vercel.app
 
-## Expanding the ESLint configuration
+> Replace the URL above with your actual Vercel deployment URL after deployment.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Features
+
+- Modern and responsive dashboard UI
+- Light and dark mode
+- Authentication / Login page
+- Protected routes
+- Dashboard overview
+- Project management
+- Project details pages
+- Project search and filtering
+- Project progress tracking
+- Analytics page
+- Profile management
+- Settings page
+- Reusable UI components
+- Responsive layout for desktop, tablet, and mobile
+- Error Boundary for application errors
+- Local storage for theme persistence
+- Clean and scalable project structure
+
+---
+
+## Pages
+
+### Authentication
+
+- Login
+
+### Dashboard
+
+- Dashboard overview
+- Statistics
+- Project progress
+- Recent projects
+- Recent activity
+
+### Projects
+
+- Projects list
+- Search projects
+- Filter projects by status
+- Project details
+- Project progress
+
+### Analytics
+
+- Analytics overview
+- Project statistics
+- Performance information
+
+### Profile
+
+- User profile
+- Personal information
+- Profile settings
+
+### Settings
+
+- General settings
+- Preferences
+- Security settings
+- Theme settings
+
+---
+
+## Tech Stack
+
+### Frontend
+
+- React
+- Vite
+- JavaScript (ES6+)
+- React Router DOM
+- CSS3
+
+### Development
+
+- ESLint
+- Vite Development Server
+- npm
+
+### Deployment
+
+- Vercel
+- GitHub
+
+---
+
+## Project Structure
+
+```text
+Pro-Dashboard/
+│
+├── public/
+│   ├── favicon.svg
+│   └── icons.svg
+│
+├── src/
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Badge.jsx
+│   │   │   ├── Button.jsx
+│   │   │   ├── Card.jsx
+│   │   │   ├── EmptyState.jsx
+│   │   │   ├── Loading.jsx
+│   │   │   └── Modal.jsx
+│   │   │
+│   │   └── layout/
+│   │       ├── Navbar.jsx
+│   │       └── Sidebar.jsx
+│   │
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   └── ThemeContext.jsx
+│   │
+│   ├── data/
+│   │   └── projects.js
+│   │
+│   ├── layouts/
+│   │   ├── AuthLayout.jsx
+│   │   └── DashboardLayout.jsx
+│   │
+│   ├── pages/
+│   │   ├── analytics/
+│   │   ├── auth/
+│   │   ├── dashboard/
+│   │   ├── profile/
+│   │   ├── projects/
+│   │   ├── settings/
+│   │   └── NotFound.jsx
+│   │
+│   ├── routes/
+│   │   ├── AppRoutes.jsx
+│   │   └── ProtectedRoute.jsx
+│   │
+│   ├── App.jsx
+│   ├── ErrorBoundary.jsx
+│   ├── index.css
+│   └── main.jsx
+│
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── README.md
+└── vite.config.js
+```
