@@ -1,16 +1,24 @@
 import { Outlet } from "react-router-dom";
 
-function AuthLayout() {
-  return (
-    <div>
-      <header>
-        <h2>React Pro Dashboard</h2>
-      </header>
+import Icon from "../components/common/Icon";
+import { useTheme } from "../context/ThemeContext";
 
-      <main>
-        <Outlet />
-      </main>
-    </div>
+function AuthLayout() {
+  const { isDark, toggleTheme } = useTheme();
+
+  return (
+    <>
+      <button
+        type="button"
+        className="icon-btn auth-theme-toggle"
+        onClick={toggleTheme}
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        <Icon name={isDark ? "sun" : "moon"} size={18} />
+      </button>
+
+      <Outlet />
+    </>
   );
 }
 

@@ -1,15 +1,7 @@
-function Loading({
-  text = "Loading...",
-  fullScreen = false,
-}) {
+function Loading({ text = "Loading…", fullScreen = false }) {
   return (
-    <div
-      className={`ui-loading ${
-        fullScreen ? "ui-loading-fullscreen" : ""
-      }`}
-    >
-      <div className="ui-spinner" />
-
+    <div className={`loading ${fullScreen ? "loading-fullscreen" : ""}`} role="status">
+      <div className="spinner" />
       <span>{text}</span>
     </div>
   );

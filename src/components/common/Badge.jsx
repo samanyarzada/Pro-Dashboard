@@ -1,13 +1,6 @@
-function Badge({
-  children,
-  variant = "default",
-}) {
+function Badge({ children, variant = "default", dot = false }) {
   return (
-    <span
-      className={`ui-badge ui-badge-${variant}`}
-    >
-      {children}
-    </span>
+    <span className={`badge badge-${variant} ${dot ? "badge-dot" : ""}`}>{children}</span>
   );
 }
 

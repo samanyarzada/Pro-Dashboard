@@ -1,79 +1,88 @@
-import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+
+import { useAuth } from "../../context/AuthContext";
+import { useProjects } from "../../context/ProjectsContext";
+import { useSettings } from "../../context/SettingsContext";
+import Avatar from "../common/Avatar";
+import Icon from "../common/Icon";
 
 function Sidebar({ isOpen, onClose }) {
-  const links = [
-    {
-      to: "/app/dashboard",
-      label: "Dashboard",
-      icon: "📊",
-    },
-    {
-      to: "/app/projects",
-      label: "Projects",
-      icon: "📁",
-    },
-    {
-      to: "/app/analytics",
-      label: "Analytics",
-      icon: "📈",
-    },
-    {
-      to: "/app/profile",
-      label: "Profile",
-      icon: "👤",
-    },
-    {
-      to: "/app/settings",
-      label: "Settings",
-      icon: "⚙️",
-    },
+  const { user } = useAuth();
+  const { projects } = useProjects();
+  const { settings } = useSettings();
+  const location = useLocation();
+
+  const mainLinks = [
+    { to: "/app/dashboard", label: "Dashboard", icon: "dashboard" },
+    { to: "/app/projects", label: "Projects", icon: "folder", count: projects.length },
+    { to: "/app/analytics", label: "Analytics", icon: "trending-up" },
   ];
 
-  return (
-    <aside
-      className={`sidebar ${
-        isOpen ? "sidebar-open" : ""
-      }`}
+  const accountLinks = [
+    { to: "/app/profile", label: "Profile", icon: "user" },
+    { to: "/app/settings", label: "Settings", icon: "sliders" },
+  ];
+
+  // Close the mobile drawer whenever the route changes or Escape is pressed.
+  useEffect(() => {
+    onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onKey = (event) => event.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
+
+  const renderLink = (link) => (
+    <NavLink
+      key={link.to}
+      to={link.to}
+      className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
     >
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          
+      <Icon name={link.icon} size={18} />
+      <span>{link.label}</span>
+      {link.count !== undefined && <span className="sidebar-link-count">{link.count}</span>}
+    </NavLink>
+  );
+
+  return (
+    <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`} aria-label="Main navigation">
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-mark">
+          <Icon name="logo" size={20} strokeWidth={2.6} />
         </div>
 
-        <span>Pro Dashboard</span>
+        <span className="sidebar-brand-name">{settings.appName}</span>
 
         <button
+          type="button"
           className="sidebar-close"
           onClick={onClose}
+          aria-label="Close menu"
         >
-          ✕
+          <Icon name="x" size={18} />
         </button>
       </div>
 
       <nav className="sidebar-nav">
-        {links.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            onClick={onClose}
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive ? "active" : ""
-              }`
-            }
-          >
-            <span className="sidebar-link-icon">
-              {link.icon}
-            </span>
+        <span className="sidebar-section">Workspace</span>
+        {mainLinks.map(renderLink)}
 
-            <span>{link.label}</span>
-          </NavLink>
-        ))}
+        <span className="sidebar-section">Account</span>
+        {accountLinks.map(renderLink)}
       </nav>
 
       <div className="sidebar-footer">
-        <span>Pro Dashboard</span>
-        <small>v1.0.0</small>
+        <Avatar name={user?.name} size="md" />
+
+        <div className="sidebar-footer-info">
+          <strong>{user?.name}</strong>
+          <span>{settings.companyName}</span>
+        </div>
       </div>
     </aside>
   );

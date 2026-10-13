@@ -1,165 +1,62 @@
 # Pro Dashboard
 
-A modern, responsive, and professional dashboard built with React and Vite.
-
-Pro Dashboard is a frontend dashboard application designed with a clean UI, reusable components, responsive layouts, authentication flow, project management, analytics, profile management, settings, and light/dark theme support.
-
-## Live Demo
-
-The project is deployed with Vercel:
-
-https://pro-dashboard.vercel.app
-
-> Replace the URL above with your actual Vercel deployment URL after deployment.
-
----
+A responsive project-management dashboard built with React and Vite, with a
+polished light and dark theme.
 
 ## Features
 
-- Modern and responsive dashboard UI
-- Light and dark mode
-- Authentication / Login page
-- Protected routes
-- Dashboard overview
-- Project management
-- Project details pages
-- Project search and filtering
-- Project progress tracking
-- Analytics page
-- Profile management
-- Settings page
-- Reusable UI components
-- Responsive layout for desktop, tablet, and mobile
-- Error Boundary for application errors
-- Local storage for theme persistence
-- Clean and scalable project structure
+- Light and dark theme: follows the OS setting by default, remembers your choice, no flash on load
+- Sign-in with protected routes and return-to-page after login
+- Dashboard with live figures calculated from your projects
+- Projects: create, edit, delete, search, filter by status and sort
+- Project details with deadline countdown and team list
+- Analytics: revenue chart (3 / 6 / 12 months), status breakdown, top projects, performance summary
+- Profile and Settings that actually save (currency, compact mode, notifications, password demo)
+- Toast notifications, confirm dialogs, accessible modals and keyboard focus styles
+- Responsive from phone to desktop; respects reduced-motion
+- Data persists in `localStorage` (projects, settings, theme, profile)
 
----
+## Getting started
 
-## Pages
+```bash
+npm install
+npm run dev
+```
 
-### Authentication
+Demo account: `admin@example.com` / `123456`
 
-- Login
+```bash
+npm run build     # production build in dist/
+npm run preview   # preview the build locally
+```
 
-### Dashboard
-
-- Dashboard overview
-- Statistics
-- Project progress
-- Recent projects
-- Recent activity
-
-### Projects
-
-- Projects list
-- Search projects
-- Filter projects by status
-- Project details
-- Project progress
-
-### Analytics
-
-- Analytics overview
-- Project statistics
-- Performance information
-
-### Profile
-
-- User profile
-- Personal information
-- Profile settings
-
-### Settings
-
-- General settings
-- Preferences
-- Security settings
-- Theme settings
-
----
-
-## Tech Stack
-
-### Frontend
-
-- React
-- Vite
-- JavaScript (ES6+)
-- React Router DOM
-- CSS3
-
-### Development
-
-- ESLint
-- Vite Development Server
-- npm
-
-### Deployment
-
-- Vercel
-- GitHub
-
----
-
-## Project Structure
+## Structure
 
 ```text
-Pro-Dashboard/
-│
-├── public/
-│   ├── favicon.svg
-│   └── icons.svg
-│
-├── src/
-│   │
-│   ├── components/
-│   │   ├── common/
-│   │   │   ├── Badge.jsx
-│   │   │   ├── Button.jsx
-│   │   │   ├── Card.jsx
-│   │   │   ├── EmptyState.jsx
-│   │   │   ├── Loading.jsx
-│   │   │   └── Modal.jsx
-│   │   │
-│   │   └── layout/
-│   │       ├── Navbar.jsx
-│   │       └── Sidebar.jsx
-│   │
-│   ├── context/
-│   │   ├── AuthContext.jsx
-│   │   └── ThemeContext.jsx
-│   │
-│   ├── data/
-│   │   └── projects.js
-│   │
-│   ├── layouts/
-│   │   ├── AuthLayout.jsx
-│   │   └── DashboardLayout.jsx
-│   │
-│   ├── pages/
-│   │   ├── analytics/
-│   │   ├── auth/
-│   │   ├── dashboard/
-│   │   ├── profile/
-│   │   ├── projects/
-│   │   ├── settings/
-│   │   └── NotFound.jsx
-│   │
-│   ├── routes/
-│   │   ├── AppRoutes.jsx
-│   │   └── ProtectedRoute.jsx
-│   │
-│   ├── App.jsx
-│   ├── ErrorBoundary.jsx
-│   ├── index.css
-│   └── main.jsx
-│
-├── .gitignore
-├── eslint.config.js
-├── index.html
-├── package-lock.json
-├── package.json
-├── README.md
-└── vite.config.js
+src/
+├── components/
+│   ├── common/      Button, Card, Modal, Icon, charts, forms…
+│   └── layout/      Sidebar, Navbar
+├── context/         Theme, Auth, Settings, Projects, Toast
+├── data/            Sample projects and activity
+├── hooks/           useClickOutside, useDocumentTitle
+├── layouts/         AuthLayout, DashboardLayout
+├── pages/           auth, dashboard, projects, analytics, profile, settings
+├── routes/          AppRoutes, ProtectedRoute
+├── styles/          tokens (light/dark), base, components, layout, pages
+└── utils/           format, status, storage
 ```
+
+All colours come from CSS variables in `src/styles/tokens.css`. To re-brand the
+app, change `--primary` (light) and the matching value under
+`html[data-theme="dark"]`.
+
+## Next steps
+
+Authentication and data are simulated on the client. To go to production,
+replace `login`, `changePassword` and the project actions in
+`src/context/` with real API calls.
+
+## Deployment
+
+The repo includes `vercel.json` so client-side routes work on Vercel.

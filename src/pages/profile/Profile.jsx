@@ -1,29 +1,48 @@
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 
-import "./Profile.css";
+import Avatar from "../../components/common/Avatar";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Profile() {
-  const { user } = useAuth();
+  useDocumentTitle("Profile");
+
+  const { user, updateUser } = useAuth();
+  const toast = useToast();
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [role, setRole] = useState(user?.role || "");
+  const [errors, setErrors] = useState({});
 
-  const [saved, setSaved] = useState(false);
+  const hasChanges = name.trim() !== user?.name || email.trim() !== user?.email;
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    setSaved(true);
+    const found = {};
+    if (!name.trim()) found.name = "Enter your full name.";
+    if (!EMAIL_PATTERN.test(email.trim())) found.email = "Enter a valid email address.";
 
-    setTimeout(() => {
-      setSaved(false);
-    }, 2500);
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
+
+    updateUser({ name: name.trim(), email: email.trim() });
+    toast.success("Profile updated", "Your details were saved.");
+  };
+
+  const handleReset = () => {
+    setName(user?.name || "");
+    setEmail(user?.email || "");
+    setErrors({});
   };
 
   return (
-    <div className="profile-page">
+    <div className="page">
       <div className="page-header">
         <div>
           <h1>Profile</h1>
@@ -32,114 +51,73 @@ function Profile() {
       </div>
 
       <div className="profile-grid">
-        <section className="profile-card profile-overview">
-          <div className="profile-avatar-large">
-            {user?.name?.charAt(0) || "A"}
-          </div>
+        <Card className="profile-overview">
+          <Avatar name={user?.name} size="lg" />
 
-          <h2>{user?.name || "Admin User"}</h2>
+          <h2>{user?.name}</h2>
+          <p className="profile-role">{user?.role}</p>
 
-          <p className="profile-role">
-            {user?.role || "Administrator"}
-          </p>
-
-          <div className="profile-divider" />
-
-          <div className="profile-meta">
-            <span>Email</span>
-            <strong>{user?.email}</strong>
-          </div>
-
-          <div className="profile-meta">
-            <span>Account ID</span>
-            <strong>USR-0001</strong>
-          </div>
-
-          <div className="profile-meta">
-            <span>Status</span>
-            <strong className="status-active">
-              Active
-            </strong>
-          </div>
-        </section>
-
-        <section className="profile-card">
-          <div className="card-header">
+          <dl className="profile-meta">
             <div>
-              <h2>Personal Information</h2>
-              <p>
-                Update your personal account information.
-              </p>
+              <dt>Email</dt>
+              <dd>{user?.email}</dd>
             </div>
-          </div>
-
-          {saved && (
-            <div className="success-message">
-              Profile updated successfully.
+            <div>
+              <dt>Account ID</dt>
+              <dd>USR-{String(user?.id || 1).padStart(4, "0")}</dd>
             </div>
-          )}
+            <div>
+              <dt>Status</dt>
+              <dd className="status-active">Active</dd>
+            </div>
+          </dl>
+        </Card>
 
-          <form
-            className="profile-form"
-            onSubmit={handleSubmit}
-          >
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="profile-name">
-                  Full Name
-                </label>
-
+        <Card title="Personal information" description="Update your account details.">
+          <form className="stack" onSubmit={handleSubmit} noValidate>
+            <div className="form-grid">
+              <div className="field">
+                <label htmlFor="profile-name">Full name</label>
                 <input
                   id="profile-name"
-                  type="text"
+                  className="input"
                   value={name}
-                  onChange={(event) =>
-                    setName(event.target.value)
-                  }
-                  required
+                  onChange={(event) => setName(event.target.value)}
+                  aria-invalid={Boolean(errors.name)}
                 />
+                {errors.name && <span className="field-error">{errors.name}</span>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="profile-role">
-                  Role
-                </label>
+              <div className="field">
+                <label htmlFor="profile-role">Role</label>
+                <input id="profile-role" className="input" value={user?.role || ""} disabled />
+                <span className="field-hint">Roles are managed by an administrator.</span>
+              </div>
 
+              <div className="field span-2">
+                <label htmlFor="profile-email">Email address</label>
                 <input
-                  id="profile-role"
-                  type="text"
-                  value={role}
-                  disabled
+                  id="profile-email"
+                  className="input"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  aria-invalid={Boolean(errors.email)}
                 />
+                {errors.email && <span className="field-error">{errors.email}</span>}
               </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="profile-email">
-                Email Address
-              </label>
-
-              <input
-                id="profile-email"
-                type="email"
-                value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
-                required
-              />
             </div>
 
             <div className="form-actions">
-              <button
-                type="submit"
-                className="primary-button"
-              >
-                Save Changes
-              </button>
+              <Button variant="secondary" onClick={handleReset} disabled={!hasChanges}>
+                Discard changes
+              </Button>
+              <Button type="submit" disabled={!hasChanges}>
+                Save changes
+              </Button>
             </div>
           </form>
-        </section>
+        </Card>
       </div>
     </div>
   );

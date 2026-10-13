@@ -1,24 +1,21 @@
+import Icon from "./Icon";
+
 function EmptyState({
-  icon = "📭",
-  title = "No data found",
-  description = "There is nothing to display here.",
+  icon = "folder-open",
+  title = "Nothing here yet",
+  description = "There is nothing to display.",
   action = null,
 }) {
   return (
-    <div className="ui-empty-state">
-      <div className="ui-empty-icon">
-        {icon}
+    <div className="empty-state">
+      <div className="empty-icon">
+        <Icon name={icon} size={26} />
       </div>
 
       <h3>{title}</h3>
-
       <p>{description}</p>
 
-      {action && (
-        <div className="ui-empty-action">
-          {action}
-        </div>
-      )}
+      {action && <div className="empty-action">{action}</div>}
     </div>
   );
 }

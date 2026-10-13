@@ -1,194 +1,190 @@
-import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { projects } from "../../data/projects";
-import "./ProjectDetails.css";
+import Avatar from "../../components/common/Avatar";
+import Badge from "../../components/common/Badge";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import EmptyState from "../../components/common/EmptyState";
+import Icon from "../../components/common/Icon";
+import ProgressBar from "../../components/common/ProgressBar";
+import ProjectFormModal from "../../components/common/ProjectFormModal";
+import { useProjects } from "../../context/ProjectsContext";
+import { useSettings } from "../../context/SettingsContext";
+import { useToast } from "../../context/ToastContext";
+import { TEAM } from "../../data/projects";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { daysUntil, formatCurrency, formatDate } from "../../utils/format";
+import { getStatusVariant } from "../../utils/status";
+
+function deadlineLabel(project) {
+  if (project.status === "Completed") return { text: "Delivered", variant: "success" };
+
+  const days = daysUntil(project.deadline);
+  if (days === null) return null;
+  if (days < 0) return { text: `${Math.abs(days)} days overdue`, variant: "danger" };
+  if (days === 0) return { text: "Due today", variant: "warning" };
+  if (days <= 14) return { text: `${days} days left`, variant: "warning" };
+  return { text: `${days} days left`, variant: "default" };
+}
 
 function ProjectDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { projects, updateProject, deleteProject } = useProjects();
+  const { settings } = useSettings();
+  const toast = useToast();
 
-  const project = projects.find(
-    (item) => item.id === id
-  );
+  const project = projects.find((item) => item.id === id);
+
+  useDocumentTitle(project ? project.name : "Project not found");
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   if (!project) {
     return (
-      <div className="project-not-found">
-
-        <div>📁</div>
-
-        <h1>Project Not Found</h1>
-
-        <p>
-          The project you're looking for doesn't exist.
-        </p>
-
-        <Link
-          to="/app/projects"
-          className="primary-button"
-        >
-          Back to Projects
-        </Link>
-
+      <div className="card">
+        <EmptyState
+          title="Project not found"
+          description="It may have been deleted, or the link is incorrect."
+          action={
+            <Link to="/app/projects" className="btn btn-primary btn-md">
+              Back to projects
+            </Link>
+          }
+        />
       </div>
     );
   }
 
+  const deadline = deadlineLabel(project);
+
+  const handleSave = (data) => {
+    updateProject(project.id, data);
+    setEditOpen(false);
+    toast.success("Project updated", `${data.name} was saved.`);
+  };
+
+  const handleDelete = () => {
+    deleteProject(project.id);
+    toast.success("Project deleted", `${project.name} was removed.`);
+    navigate("/app/projects", { replace: true });
+  };
+
   return (
-    <div className="project-details-page">
+    <div className="page">
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        <Link to="/app/projects">Projects</Link>
+        <Icon name="chevron-right" size={14} />
+        <span aria-current="page">{project.name}</span>
+      </nav>
 
-      {/* Breadcrumb */}
-
-      <div className="breadcrumb">
-
-        <Link to="/app/projects">
-          Projects
-        </Link>
-
-        <span>/</span>
-
-        <span>{project.name}</span>
-
-      </div>
-
-      {/* Header */}
-
-      <div className="project-details-header">
-
-        <div className="project-title">
-
-          <div className="project-details-icon">
-            📁
+      <div className="page-header">
+        <div className="details-title">
+          <div className="details-icon">
+            <Icon name="folder" size={24} />
           </div>
 
           <div>
             <h1>{project.name}</h1>
             <p>{project.client}</p>
           </div>
-
         </div>
 
-        <span
-          className={`status ${project.status
-            .toLowerCase()
-            .replace(" ", "-")}`}
-        >
-          {project.status}
-        </span>
+        <div className="page-header-actions">
+          <Badge variant={getStatusVariant(project.status)} dot>
+            {project.status}
+          </Badge>
 
+          <Button variant="secondary" onClick={() => setEditOpen(true)}>
+            <Icon name="pencil" size={16} /> Edit
+          </Button>
+
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
+            <Icon name="trash" size={16} /> Delete
+          </Button>
+        </div>
       </div>
-
-      {/* Overview */}
 
       <div className="details-grid">
-
         <div className="details-main">
+          <Card title="Overview">
+            <p className="overview-text">{project.description || "No description provided."}</p>
 
-          <section className="details-card">
-
-            <h2>Project Overview</h2>
-
-            <p className="overview-text">
-              {project.description}
-            </p>
-
-            <div className="project-meta">
-
+            <dl className="meta-grid meta-grid-lg">
               <div>
-                <span>Category</span>
-                <strong>{project.category}</strong>
+                <dt>Category</dt>
+                <dd>{project.category}</dd>
               </div>
-
               <div>
-                <span>Budget</span>
-                <strong>{project.budget}</strong>
+                <dt>Budget</dt>
+                <dd>{formatCurrency(project.budget, settings.currency)}</dd>
               </div>
-
               <div>
-                <span>Deadline</span>
-                <strong>{project.deadline}</strong>
+                <dt>Deadline</dt>
+                <dd>
+                  {formatDate(project.deadline)}
+                  {deadline && (
+                    <>
+                      {" "}
+                      <Badge variant={deadline.variant}>{deadline.text}</Badge>
+                    </>
+                  )}
+                </dd>
               </div>
+            </dl>
+          </Card>
 
-            </div>
-
-          </section>
-
-          {/* Progress */}
-
-          <section className="details-card">
-
-            <div className="details-card-header">
-
-              <div>
-                <h2>Project Progress</h2>
-                <p>
-                  Current project completion
-                </p>
-              </div>
-
-              <strong className="progress-number">
-                {project.progress}%
-              </strong>
-
-            </div>
-
-            <div className="large-progress">
-              <div
-                style={{
-                  width: `${project.progress}%`,
-                }}
-              />
-            </div>
-
-          </section>
-
+          <Card
+            title="Progress"
+            description="Current completion"
+            actions={<strong className="progress-number">{project.progress}%</strong>}
+          >
+            <ProgressBar value={project.progress} large label="Project progress" />
+          </Card>
         </div>
 
-        {/* Sidebar */}
-
         <aside className="details-sidebar">
+          <Card title="Team" description={`${project.team.length} members`}>
+            <ul className="team-list">
+              {project.team.map((memberId) => {
+                const member = TEAM.find((item) => item.id === memberId);
+                return (
+                  <li key={memberId} className="team-member">
+                    <Avatar initials={memberId} name={member?.name} size="md" />
+                    <div>
+                      <strong>{member?.name || memberId}</strong>
+                      <span>{member?.role || "Team member"}</span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </Card>
 
-          <section className="details-card">
-
-            <h2>Team Members</h2>
-
-            <div className="team-list">
-
-              {project.team.map((member) => (
-                <div
-                  className="team-member"
-                  key={member}
-                >
-                  <div className="team-avatar">
-                    {member}
-                  </div>
-
-                  <div>
-                    <strong>
-                      Team Member
-                    </strong>
-
-                    <span>
-                      Developer
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-            </div>
-
-          </section>
-
-          <Link
-            to="/app/projects"
-            className="back-button"
-          >
-            ← Back to Projects
+          <Link to="/app/projects" className="btn btn-secondary btn-md btn-block">
+            <Icon name="arrow-left" size={16} /> Back to projects
           </Link>
-
         </aside>
-
       </div>
 
+      <ProjectFormModal
+        isOpen={editOpen}
+        project={project}
+        onClose={() => setEditOpen(false)}
+        onSubmit={handleSave}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteOpen}
+        title="Delete project?"
+        message={`“${project.name}” will be permanently removed. This cannot be undone.`}
+        confirmLabel="Delete project"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
     </div>
   );
 }

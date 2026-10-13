@@ -1,0 +1,144 @@
+/* ==========================================================
+   Design tokens — light is the default, dark overrides below.
+   Every component reads colours from these variables only.
+========================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg-app: #f4f6f8;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f8fafb;
+  --bg-hover: #eef1f4;
+  --bg-sidebar: #0f1720;
+  --bg-overlay: rgba(10, 16, 24, 0.5);
+
+  /* Text */
+  --text-strong: #0f1720;
+  --text-body: #2b3644;
+  --text-muted: #5b6878;
+  --text-faint: #8794a4;
+  --text-on-primary: #ffffff;
+  --text-sidebar: #9aa7b6;
+  --text-sidebar-active: #ffffff;
+
+  /* Borders */
+  --border: #e2e7ec;
+  --border-strong: #cbd3dc;
+
+  /* Brand */
+  --primary: #0f766e;
+  --primary-hover: #0b5f59;
+  --primary-soft: #e1f4f1;
+  --primary-text: #0b5f59;
+  --focus-ring: rgba(15, 118, 110, 0.35);
+
+  /* Status colours: background / text / solid */
+  --success-bg: #e3f6ea;
+  --success-text: #166534;
+  --success-solid: #22a05a;
+
+  --warning-bg: #fdf0d5;
+  --warning-text: #8a5300;
+  --warning-solid: #e39a12;
+
+  --danger-bg: #fde8e8;
+  --danger-text: #a61b1b;
+  --danger-solid: #d93a3a;
+  --danger-hover: #b92d2d;
+
+  --info-bg: #e2edfd;
+  --info-text: #1d4fa3;
+  --info-solid: #3b7ddd;
+
+  --neutral-bg: #eceff3;
+  --neutral-text: #4a5666;
+  --neutral-solid: #8794a4;
+
+  /* Charts */
+  --chart-bar: #0f766e;
+  --chart-bar-muted: #b7dcd8;
+  --chart-grid: #e6eaee;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 32, 0.05);
+  --shadow-md: 0 4px 14px rgba(15, 23, 32, 0.07);
+  --shadow-lg: 0 18px 48px rgba(15, 23, 32, 0.16);
+
+  /* Shape & spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 999px;
+
+  --sidebar-width: 256px;
+  --navbar-height: 68px;
+
+  --font-sans: "Plus Jakarta Sans", Inter, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  --transition: 160ms ease;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-app: #0b1118;
+  --bg-surface: #121a24;
+  --bg-subtle: #0f1620;
+  --bg-hover: #1a2431;
+  --bg-sidebar: #0a0f15;
+  --bg-overlay: rgba(2, 5, 9, 0.7);
+
+  --text-strong: #f1f5f9;
+  --text-body: #cfd8e3;
+  --text-muted: #94a3b4;
+  --text-faint: #6b7a8c;
+  --text-on-primary: #04201d;
+  --text-sidebar: #8794a4;
+  --text-sidebar-active: #ffffff;
+
+  --border: #1f2a37;
+  --border-strong: #2d3b4c;
+
+  --primary: #2dd4bf;
+  --primary-hover: #5eead4;
+  --primary-soft: #0f2d2b;
+  --primary-text: #5eead4;
+  --focus-ring: rgba(45, 212, 191, 0.4);
+
+  --success-bg: #0f2a1a;
+  --success-text: #6ee7a0;
+  --success-solid: #34c97b;
+
+  --warning-bg: #2e2208;
+  --warning-text: #fbbf4d;
+  --warning-solid: #f0b429;
+
+  --danger-bg: #331616;
+  --danger-text: #fca5a5;
+  --danger-solid: #ef5b5b;
+  --danger-hover: #f87171;
+
+  --info-bg: #14233d;
+  --info-text: #8db8ff;
+  --info-solid: #5b9bff;
+
+  --neutral-bg: #1b2531;
+  --neutral-text: #aab6c4;
+  --neutral-solid: #6b7a8c;
+
+  --chart-bar: #2dd4bf;
+  --chart-bar-muted: #1d4a47;
+  --chart-grid: #1f2a37;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* Compact mode (Settings → Preferences) */
+html[data-density="compact"] {
+  --navbar-height: 60px;
+}

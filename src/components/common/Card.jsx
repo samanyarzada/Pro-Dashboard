@@ -1,39 +1,20 @@
-function Card({
-  children,
-  title,
-  description,
-  actions,
-  className = "",
-}) {
-  return (
-    <section className={`ui-card ${className}`}>
-      {(title || description || actions) && (
-        <div className="ui-card-header">
-          <div>
-            {title && (
-              <h2 className="ui-card-title">
-                {title}
-              </h2>
-            )}
+function Card({ children, title, description, actions, className = "", bodyClassName = "" }) {
+  const hasHeader = title || description || actions;
 
-            {description && (
-              <p className="ui-card-description">
-                {description}
-              </p>
-            )}
+  return (
+    <section className={`card ${className}`}>
+      {hasHeader && (
+        <div className="card-header">
+          <div>
+            {title && <h2 className="card-title">{title}</h2>}
+            {description && <p className="card-description">{description}</p>}
           </div>
 
-          {actions && (
-            <div className="ui-card-actions">
-              {actions}
-            </div>
-          )}
+          {actions}
         </div>
       )}
 
-      <div className="ui-card-body">
-        {children}
-      </div>
+      <div className={`card-body ${bodyClassName}`}>{children}</div>
     </section>
   );
 }

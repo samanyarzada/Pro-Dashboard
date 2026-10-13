@@ -1,39 +1,24 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import Sidebar from "../components/layout/Sidebar";
 import Navbar from "../components/layout/Navbar";
+import Sidebar from "../components/layout/Sidebar";
 
 function DashboardLayout() {
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const closeSidebar = () => {
-    setSidebarOpen(false);
-  };
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={closeSidebar}
-      />
+    <div className="app-shell">
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
-      {sidebarOpen && (
-        <div
-          className="sidebar-overlay"
-          onClick={closeSidebar}
-        />
-      )}
+      {sidebarOpen && <div className="sidebar-overlay" onClick={closeSidebar} aria-hidden="true" />}
 
-      <div className="dashboard-main">
-        <Navbar
-          onMenuClick={() =>
-            setSidebarOpen((current) => !current)
-          }
-        />
+      <div className="app-main">
+        <Navbar onMenuClick={() => setSidebarOpen((open) => !open)} />
 
-        <main className="dashboard-content">
+        <main className="app-content">
           <Outlet />
         </main>
       </div>

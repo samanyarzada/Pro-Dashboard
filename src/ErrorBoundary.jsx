@@ -1,79 +1,43 @@
-import {
-  Component,
-} from "react";
+import { Component } from "react";
+
+import Icon from "./components/common/Icon";
 
 class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
+  state = { hasError: false, error: null };
 
-    this.state = {
-      hasError: false,
-      error: null,
-    };
-  }
-
-  static getDerivedStateFromError(
-    error
-  ) {
-    return {
-      hasError: true,
-      error,
-    };
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error(
-      "Application Error:",
-      error
-    );
-
-    console.error(
-      "Error Info:",
-      errorInfo
-    );
+    console.error("Application error:", error, errorInfo);
   }
 
-  handleReload = () => {
-    window.location.reload();
-  };
+  handleReload = () => window.location.reload();
 
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className="error-page">
-          <div className="error-card">
-            <div className="error-icon">
-              ⚠️
-            </div>
+    if (!this.state.hasError) return this.props.children;
 
-            <h1>
-              Something went wrong
-            </h1>
-
-            <p>
-              An unexpected error occurred
-              while loading this page.
-            </p>
-
-            {import.meta.env.DEV &&
-              this.state.error && (
-                <pre className="error-details">
-                  {this.state.error.message}
-                </pre>
-              )}
-
-            <button
-              className="error-button"
-              onClick={this.handleReload}
-            >
-              Reload Application
-            </button>
+    return (
+      <div className="centered-page">
+        <div className="centered-card">
+          <div className="error-icon">
+            <Icon name="alert-triangle" size={28} />
           </div>
-        </div>
-      );
-    }
 
-    return this.props.children;
+          <h1>Something went wrong</h1>
+          <p>The page failed to load. Reload to try again.</p>
+
+          {import.meta.env.DEV && this.state.error && (
+            <pre className="error-details">{this.state.error.message}</pre>
+          )}
+
+          <button type="button" className="btn btn-primary btn-md" onClick={this.handleReload}>
+            Reload application
+          </button>
+        </div>
+      </div>
+    );
   }
 }
 

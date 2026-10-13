@@ -1,339 +1,158 @@
-import "./Dashboard.css";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-const stats = [
-  {
-    title: "Total Revenue",
-    value: "$24,580",
-    change: "+12.5%",
-    trend: "up",
-    icon: "💰",
-  },
-  {
-    title: "Total Projects",
-    value: "128",
-    change: "+8.2%",
-    trend: "up",
-    icon: "📁",
-  },
-  {
-    title: "Active Users",
-    value: "8,549",
-    change: "+15.8%",
-    trend: "up",
-    icon: "👥",
-  },
-  {
-    title: "Pending Tasks",
-    value: "24",
-    change: "-4.3%",
-    trend: "down",
-    icon: "⏳",
-  },
-];
-
-const projects = [
-  {
-    name: "E-Commerce Platform",
-    client: "Acme Corporation",
-    status: "In Progress",
-    progress: 72,
-  },
-  {
-    name: "Mobile Banking App",
-    client: "FinTech Inc.",
-    status: "Completed",
-    progress: 100,
-  },
-  {
-    name: "Marketing Website",
-    client: "Creative Studio",
-    status: "In Progress",
-    progress: 48,
-  },
-  {
-    name: "CRM Dashboard",
-    client: "Tech Solutions",
-    status: "Review",
-    progress: 86,
-  },
-];
-
-const activities = [
-  {
-    user: "Alex Morgan",
-    action: "completed a task",
-    project: "E-Commerce Platform",
-    time: "10 minutes ago",
-    avatar: "AM",
-  },
-  {
-    user: "Sarah Wilson",
-    action: "created a project",
-    project: "CRM Dashboard",
-    time: "32 minutes ago",
-    avatar: "SW",
-  },
-  {
-    user: "Michael Brown",
-    action: "updated the design",
-    project: "Marketing Website",
-    time: "1 hour ago",
-    avatar: "MB",
-  },
-  {
-    user: "Emma Davis",
-    action: "commented on",
-    project: "Mobile Banking App",
-    time: "2 hours ago",
-    avatar: "ED",
-  },
-];
+import Avatar from "../../components/common/Avatar";
+import Badge from "../../components/common/Badge";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import EmptyState from "../../components/common/EmptyState";
+import Icon from "../../components/common/Icon";
+import ProgressBar from "../../components/common/ProgressBar";
+import RevenueChart from "../../components/common/RevenueChart";
+import { useAuth } from "../../context/AuthContext";
+import { useProjects } from "../../context/ProjectsContext";
+import { useSettings } from "../../context/SettingsContext";
+import { activities, monthlyRevenue } from "../../data/projects";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { formatCompactCurrency, formatCurrency } from "../../utils/format";
+import { getStatusVariant } from "../../utils/status";
 
 function Dashboard() {
-  return (
-    <div className="dashboard-page">
+  useDocumentTitle("Dashboard");
 
-      {/* Page Header */}
+  const { user } = useAuth();
+  const { projects } = useProjects();
+  const { settings } = useSettings();
+  const navigate = useNavigate();
+
+  const [range, setRange] = useState(6);
+
+  const stats = useMemo(() => {
+    const active = projects.filter((project) => project.status === "In Progress").length;
+    const completed = projects.filter((project) => project.status === "Completed").length;
+    const budget = projects.reduce((sum, project) => sum + Number(project.budget || 0), 0);
+    const pending = projects.filter((project) => project.status !== "Completed").length;
+    const last = monthlyRevenue[monthlyRevenue.length - 1].value;
+    const previous = monthlyRevenue[monthlyRevenue.length - 2].value;
+    const growth = ((last - previous) / previous) * 100;
+
+    return [
+      { title: "Monthly revenue", value: formatCurrency(last, settings.currency), note: `${growth >= 0 ? "+" : ""}${growth.toFixed(1)}% vs last month`, up: growth >= 0, icon: "dollar" },
+      { title: "Total projects", value: String(projects.length), note: `${completed} completed`, up: true, icon: "folder" },
+      { title: "In progress", value: String(active), note: `${pending} not yet completed`, up: true, icon: "clock" },
+      { title: "Portfolio budget", value: formatCompactCurrency(budget, settings.currency), note: "Across all projects", up: true, icon: "briefcase" },
+    ];
+  }, [projects, settings.currency]);
+
+  const recent = projects.slice(0, 5);
+  const firstName = user?.name?.split(" ")[0] || "there";
+  const chartData = monthlyRevenue.slice(-range);
+
+  return (
+    <div className="page">
       <div className="page-header">
         <div>
-          <h1>Dashboard</h1>
-          <p>
-            Here's what's happening with your projects today.
-          </p>
+          <h1>Welcome back, {firstName}</h1>
+          <p>Here is what is happening across your projects today.</p>
         </div>
 
-        <button className="primary-button">
-          + New Project
-        </button>
+        <div className="page-header-actions">
+          <Button onClick={() => navigate("/app/projects", { state: { openCreate: true } })}>
+            <Icon name="plus" size={16} /> New project
+          </Button>
+        </div>
       </div>
 
-      {/* Stats */}
-      <section className="stats-grid">
+      <section className="stats-grid" aria-label="Key figures">
         {stats.map((stat) => (
-          <div className="stat-card" key={stat.title}>
+          <div className="card stat-card" key={stat.title}>
+            <div className="stat-icon">
+              <Icon name={stat.icon} size={20} />
+            </div>
 
-            <div className="stat-card-top">
-              <div className="stat-icon">
-                {stat.icon}
-              </div>
-
-              <span
-                className={`stat-change ${stat.trend}`}
-              >
-                {stat.change}
+            <div className="stat-body">
+              <span className="stat-title">{stat.title}</span>
+              <strong className="stat-value">{stat.value}</strong>
+              <span className={`stat-note ${stat.up ? "up" : "down"}`}>
+                <Icon name={stat.up ? "trending-up" : "trending-down"} size={14} />
+                {stat.note}
               </span>
             </div>
-
-            <div className="stat-value">
-              {stat.value}
-            </div>
-
-            <div className="stat-title">
-              {stat.title}
-            </div>
-
           </div>
         ))}
       </section>
 
-      {/* Main Grid */}
       <section className="dashboard-grid">
-
-        {/* Revenue Chart */}
-        <div className="dashboard-card revenue-card">
-
-          <div className="card-header">
-            <div>
-              <h2>Revenue Overview</h2>
-              <p>Monthly revenue performance</p>
+        <Card
+          title="Revenue overview"
+          description="Monthly revenue performance"
+          actions={
+            <div className="segmented" role="group" aria-label="Chart range">
+              <button type="button" aria-pressed={range === 6} onClick={() => setRange(6)}>
+                6 months
+              </button>
+              <button type="button" aria-pressed={range === 12} onClick={() => setRange(12)}>
+                12 months
+              </button>
             </div>
+          }
+        >
+          <RevenueChart data={chartData} currency={settings.currency} />
+        </Card>
 
-            <select defaultValue="6">
-              <option value="6">Last 6 months</option>
-              <option value="12">Last 12 months</option>
-            </select>
-          </div>
-
-          <div className="chart">
-
-            <div className="chart-y-axis">
-              <span>$30k</span>
-              <span>$20k</span>
-              <span>$10k</span>
-              <span>$0</span>
-            </div>
-
-            <div className="chart-area">
-
-              <div className="chart-grid-line" />
-              <div className="chart-grid-line" />
-              <div className="chart-grid-line" />
-              <div className="chart-grid-line" />
-
-              <div className="bars">
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "45%" }}
-                  />
-                  <span>May</span>
-                </div>
-
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "62%" }}
-                  />
-                  <span>Jun</span>
-                </div>
-
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "55%" }}
-                  />
-                  <span>Jul</span>
-                </div>
-
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "78%" }}
-                  />
-                  <span>Aug</span>
-                </div>
-
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "68%" }}
-                  />
-                  <span>Sep</span>
-                </div>
-
-                <div className="bar-wrapper">
-                  <div
-                    className="bar"
-                    style={{ height: "92%" }}
-                  />
-                  <span>Oct</span>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Projects */}
-        <div className="dashboard-card">
-
-          <div className="card-header">
-            <div>
-              <h2>Recent Projects</h2>
-              <p>Your latest projects</p>
-            </div>
-
-            <button className="text-button">
+        <Card
+          title="Recent projects"
+          description="Your latest work"
+          actions={
+            <Link to="/app/projects" className="btn btn-ghost btn-sm">
               View all
-            </button>
-          </div>
-
-          <div className="projects-list">
-
-            {projects.map((project) => (
-              <div
-                className="project-item"
-                key={project.name}
-              >
-                <div className="project-info">
-                  <div className="project-icon">
-                    📁
-                  </div>
-
-                  <div>
-                    <h3>{project.name}</h3>
-                    <p>{project.client}</p>
-                  </div>
-                </div>
-
-                <div className="project-right">
-
-                  <span
-                    className={`status ${project.status
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    {project.status}
-                  </span>
-
-                  <div className="progress-container">
-                    <div className="progress-bar">
-                      <div
-                        className="progress-value"
-                        style={{
-                          width: `${project.progress}%`,
-                        }}
-                      />
+            </Link>
+          }
+          bodyClassName="list-body"
+        >
+          {recent.length === 0 ? (
+            <EmptyState title="No projects yet" description="Create your first project to see it here." />
+          ) : (
+            <ul className="list">
+              {recent.map((project) => (
+                <li key={project.id}>
+                  <Link to={`/app/projects/${project.id}`} className="list-row">
+                    <div className="list-row-main">
+                      <strong>{project.name}</strong>
+                      <span>{project.client}</span>
                     </div>
 
-                    <span>{project.progress}%</span>
-                  </div>
-
-                </div>
-              </div>
-            ))}
-
-          </div>
-
-        </div>
-
+                    <div className="list-row-side">
+                      <Badge variant={getStatusVariant(project.status)}>{project.status}</Badge>
+                      <div className="list-progress">
+                        <ProgressBar value={project.progress} label={`${project.name} progress`} />
+                        <span>{project.progress}%</span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       </section>
 
-      {/* Activity */}
-      <section className="dashboard-card activity-card">
-
-        <div className="card-header">
-          <div>
-            <h2>Recent Activity</h2>
-            <p>Latest actions from your team</p>
-          </div>
-
-          <button className="text-button">
-            View all
-          </button>
-        </div>
-
-        <div className="activity-list">
-
+      <Card title="Recent activity" description="Latest actions from your team">
+        <ul className="activity-list">
           {activities.map((activity) => (
-            <div
-              className="activity-item"
-              key={`${activity.user}-${activity.time}`}
-            >
-
-              <div className="activity-avatar">
-                {activity.avatar}
-              </div>
+            <li className="activity-item" key={activity.id}>
+              <Avatar name={activity.user} size="md" />
 
               <div className="activity-content">
                 <p>
-                  <strong>{activity.user}</strong>{" "}
-                  {activity.action}{" "}
-                  <strong>{activity.project}</strong>
+                  <strong>{activity.user}</strong> {activity.action} <strong>{activity.project}</strong>
                 </p>
-
                 <span>{activity.time}</span>
               </div>
-
-            </div>
+            </li>
           ))}
-
-        </div>
-
-      </section>
-
+        </ul>
+      </Card>
     </div>
   );
 }
